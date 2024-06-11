@@ -7,8 +7,7 @@ import (
 	"strings"
 )
 
-
-func echo(array []string){
+func funcEcho(array []string){
 	arg := array[1:]
 	for e := range arg {
 		fmt.Print(arg[e])
@@ -17,6 +16,20 @@ func echo(array []string){
 		}
 	}
 	fmt.Print("\n")
+}
+
+func funcType(array []string){ 
+	builtin := []string{"echo", "exit", "type"}
+	find := false
+	for i := range builtin{
+		if (builtin[i] == array[1]){
+			fmt.Println(array[1] + " is a shell builtin")
+			find = true
+		}
+	}
+	if (!find){
+		fmt.Println(array[1] + ": not found")
+	}
 }
 
 func main() {
@@ -29,7 +42,9 @@ func main() {
 		str := strings.TrimSuffix(cmd, "\n")
 		array := strings.Split(str, " ")
 		if (array[0] == "echo"){
-			echo(array)
+			funcEcho(array)
+		} else if (array[0] == "type"){
+			funcType(array)
 		} else {
 			fmt.Println(cmd[:len(cmd)-1] +": command not found")
 		}
