@@ -20,16 +20,21 @@ func funcEcho(array []string){
 
 func funcType(array []string){ 
 	builtin := []string{"echo", "exit", "type"}
-	find := false
 	for i := range builtin{
 		if (builtin[i] == array[1]){
 			fmt.Println(array[1] + " is a shell builtin")
-			find = true
+			return
 		}
 	}
-	if (!find){
-		fmt.Println(array[1] + ": not found")
+	path := strings.Split(os.Getenv("PATH"), ":")
+	for _ , e := range path {
+		_ , err :=  os.Stat( e + "/" + array[1])
+		if (err == nil){
+			fmt.Println(array[1] + " is " + e + "/" + array[1])
+			return
+		}
 	}
+	fmt.Println(array[1] + ": not found")
 }
 
 func main() {
