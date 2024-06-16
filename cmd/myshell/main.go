@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -37,6 +38,16 @@ func funcType(array []string){
 	fmt.Println(array[1] + ": not found")
 }
 
+func funcExec(array []string) bool {
+    cmd := exec.Command(array[0], array[1:]...)
+    output, err := cmd.CombinedOutput()
+    if err != nil {
+		return false
+    }
+    fmt.Printf("%s", output)
+	return true
+}
+
 func main() {
 	for{
 		fmt.Fprint(os.Stdout, "$ ")
@@ -50,8 +61,10 @@ func main() {
 			funcEcho(array)
 		} else if (array[0] == "type"){
 			funcType(array)
-		} else {
-			fmt.Println(cmd[:len(cmd)-1] +": command not found")
+		} else { 
+			if (!funcExec(array)){
+				fmt.Println(cmd[:len(cmd)-1] +": command not found")
+			}
 		}
 	}
 }
