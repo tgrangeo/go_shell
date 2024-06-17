@@ -53,10 +53,13 @@ func funcCd(array []string) {
 		fmt.Println("missing argument")
 		return
 	}
+	if (array[1] == "~"){
+		array[1] = os.Getenv("HOME")
+	}
 	err := os.Chdir(array[1])
 	if err != nil {
 		fmt.Println(array[1] + ": No such file or directory")
-	}
+	}	
 }
 
 func main() {
