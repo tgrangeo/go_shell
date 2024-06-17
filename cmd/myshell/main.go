@@ -48,8 +48,19 @@ func funcExec(array []string) bool {
 	return true
 }
 
+func funcCd(array []string) {
+	if len(array) < 2 {
+		fmt.Println("missing argument")
+		return
+	}
+	err := os.Chdir(array[1])
+	if err != nil {
+		fmt.Println(array[1] + ": No such file or directory")
+	}
+}
+
 func main() {
-	for{
+	for {
 		fmt.Fprint(os.Stdout, "$ ")
 		cmd , _ := bufio.NewReader(os.Stdin).ReadString('\n')
 		if (cmd == "exit 0\n"){
@@ -61,6 +72,8 @@ func main() {
 			funcEcho(array)
 		} else if (array[0] == "type"){
 			funcType(array)
+		} else if (array[0] == "cd"){
+			funcCd(array)
 		} else { 
 			if (!funcExec(array)){
 				fmt.Println(cmd[:len(cmd)-1] +": command not found")
