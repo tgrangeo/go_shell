@@ -5,81 +5,82 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
-func funcEcho(array []string){
-	arg := array[1:]
-	for e := range arg {
-		fmt.Print(arg[e])
-		if (e < len(arg) - 1){
-			fmt.Print(" ")
-		}
-	}
-	fmt.Print("\n")
+func funcEcho(args []string) {
+	fmt.Println(strings.Join(args[1:], " "))
 }
 
-func funcType(array []string){ 
-	builtin := []string{"echo", "exit", "type"}
-	for i := range builtin{
-		if (builtin[i] == array[1]){
-			fmt.Println(array[1] + " is a shell builtin")
+func funcType(args []string) {
+	builtins := map[string]struct{}{
+		"echo": {}, "exit": {}, "type": {}, "cd": {},
+	}
+	if _, found := builtins[args[1]]; found {
+		fmt.Println(args[1] + " is a shell builtin")
+		return
+	}
+
+	pathDirs := strings.Split(os.Getenv("PATH"), ":")
+	for _, dir := range pathDirs {
+		if _, err := os.Stat(filepath.Join(dir, args[1])); err == nil {
+			fmt.Println(args[1] + " is " + filepath.Join(dir, args[1]))
 			return
 		}
 	}
-	path := strings.Split(os.Getenv("PATH"), ":")
-	for _ , e := range path {
-		_ , err :=  os.Stat( e + "/" + array[1])
-		if (err == nil){
-			fmt.Println(array[1] + " is " + e + "/" + array[1])
-			return
-		}
-	}
-	fmt.Println(array[1] + ": not found")
+	fmt.Println(args[1] + ": not found")
 }
 
-func funcExec(array []string) bool {
-    cmd := exec.Command(array[0], array[1:]...)
-    output, err := cmd.CombinedOutput()
-    if err != nil {
+func funcExec(args []string) bool {
+	cmd := exec.Command(args[0], args[1:]...)
+	output, err := cmd.CombinedOutput()
+	if err != nil {
 		return false
-    }
-    fmt.Printf("%s", output)
+	}
+	fmt.Printf("%s", output)
 	return true
 }
 
-func funcCd(array []string) {
-	if len(array) < 2 {
-		fmt.Println("missing argument")
+func funcCd(args []string) {
+	if len(args) < 2 {
+		fmt.Println("cd: missing argument")
 		return
 	}
-	if (array[1] == "~"){
-		array[1] = os.Getenv("HOME")
+	if args[1] == "~" {
+		args[1] = os.Getenv("HOME")
 	}
-	err := os.Chdir(array[1])
+	err := os.Chdir(args[1])
 	if err != nil {
-		fmt.Println(array[1] + ": No such file or directory")
-	}	
+		fmt.Println("cd: " + args[1] + ": No such file or directory")
+	}
 }
 
 func main() {
+	reader := bufio.NewReader(os.Stdin)
 	for {
-		fmt.Fprint(os.Stdout, "$ ")
-		cmd , _ := bufio.NewReader(os.Stdin).ReadString('\n')
-		if (cmd == "exit 0\n"){
+		showPrefix();
+		cmd, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Println("Error reading input:", err)
+			continue
+		}
+		cmd = strings.TrimSpace(cmd)
+		if cmd == "exit 0" {
 			return
 		}
-		str := strings.TrimSuffix(cmd, "\n")
-		array := strings.Split(str, " ")
-		if (array[0] == "echo"){
-			funcEcho(array)
-		} else if (array[0] == "type"){
-			funcType(array)
-		} else if (array[0] == "cd"){
-			funcCd(array)
-		} else { 
-			if (!funcExec(array)){
-				fmt.Println(cmd[:len(cmd)-1] +": command not found")
+
+		args := strings.Split(cmd, " ")
+		switch args[0] {
+		case "echo":
+			funcEcho(args)
+		case "type":
+			funcType(args)
+		case "cd":
+			funcCd(args)
+		default:
+			if !funcExec(args) {
+				fmt.Println(args[0] + ": command not found")
 			}
 		}
 	}
