@@ -1,36 +1,82 @@
-[![progress-banner](https://backend.codecrafters.io/progress/shell/0adbcc94-7415-4f23-86a4-5d35b5f4e512)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+# Custom Shell in Go
 
-This is a starting point for Go solutions to the
-["Build Your Own Shell" Challenge](https://app.codecrafters.io/courses/shell/overview).
+This project is a simple custom shell implemented in Go. It supports a few built-in commands and can execute other commands available in the system's `PATH`. The built-in commands include `echo`, `type`, `cd`, and `exit`.
 
-In this challenge, you'll build your own POSIX compliant shell that's capable of
-interpreting shell commands, running external programs and builtin commands like
-cd, pwd, echo and more. Along the way, you'll learn about shell command parsing,
-REPLs, builtin commands, and more.
+## Features
 
-**Note**: If you're viewing this repo on GitHub, head over to
-[codecrafters.io](https://codecrafters.io) to try the challenge.
+- **Built-in Commands**:
+  - `echo`: Prints the given arguments to the terminal.
+  - `type`: Displays whether a command is a shell built-in or the path to the command in the system.
+  - `cd`: Changes the current working directory.
+  - `exit`: Exits the shell.
 
-# Passing the first stage
+- **Execute External Commands**: Executes any external command available in the system's `PATH`.
 
-The entry point for your `shell` implementation is in `cmd/myshell/main.go`.
-Study and uncomment the relevant code, and push your changes to pass the first
-stage:
+- **Prompt Display**: Shows the current working directory in the shell prompt.
+
+## Usage
+
+### Built-in Commands
+
+#### echo
+Prints the given arguments to the terminal.
 
 ```sh
-git add .
-git commit -m "pass 1st stage" # any msg
-git push origin master
+echo Hello, World!
 ```
 
-Time to move on to the next stage!
+#### type
+Displays whether a command is a shell built-in or the path to the command in the system.
 
-# Stage 2 & beyond
+```sh
+type echo
+type ls
+```
 
-Note: This section is for stages 2 and beyond.
+#### cd
+Changes the current working directory.
 
-1. Ensure you have `go (1.19)` installed locally
-1. Run `./your_shell.sh` to run your program, which is implemented in
-   `cmd/myshell/main.go`.
-1. Commit your changes and run `git push origin master` to submit your solution
-   to CodeCrafters. Test output will be streamed to your terminal.
+```sh
+cd /path/to/directory
+cd ~  # Change to home directory
+```
+
+#### exit
+Exits the shell.
+
+```sh
+exit 0
+```
+
+### Executing External Commands
+Any external command available in the system's `PATH` can be executed.
+
+```sh
+ls -l
+pwd
+```
+
+## How to Run
+
+1. Clone the repository:
+
+    ```sh
+    git clone https://github.com/yourusername/golang-shell.git
+    cd golang-shell
+    ```
+
+2. Build the project:
+
+    ```sh
+    go build -o golang-shell
+    ```
+
+3. Run the shell:
+
+    ```sh
+    ./golang-shell
+    ```
+
+---
+
+Happy Shell Scripting!
